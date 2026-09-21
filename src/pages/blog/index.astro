@@ -1,0 +1,26 @@
+---
+import { getCollection } from 'astro:content';
+import PostCard from '../../components/PostCard.astro';
+import ArchiveLayout from '../../layouts/ArchiveLayout.astro';
+import { visiblePosts } from '../../lib/posts';
+
+const posts = visiblePosts(await getCollection('blog'));
+---
+
+<ArchiveLayout
+	title="ALL NOTES"
+	index="00"
+	kicker="FULL ARCHIVE"
+	description="所有被潮水留下的记录，按照写下它们的时间排列。"
+>
+	{posts.length > 0 ? (
+		<section class="post-list" aria-label="全部文章">
+			{posts.map((post, index) => <PostCard post={post} order={index} />)}
+		</section>
+	) : (
+		<section class="empty-state">
+			<strong>NO SIGNAL YET</strong>
+			<p>这里还没有正式发布的文章。第一篇记录写下后，它会出现在这里。</p>
+		</section>
+	)}
+</ArchiveLayout>

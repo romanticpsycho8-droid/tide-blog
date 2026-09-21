@@ -1,0 +1,22 @@
+---
+import { getCollection } from 'astro:content';
+import ArchiveLayout from '../../layouts/ArchiveLayout.astro';
+import { visiblePosts } from '../../lib/posts';
+
+const posts = visiblePosts(await getCollection('blog'));
+const counts = new Map<string, number>();
+for (const post of posts) {
+	for (const tag of post.data.tags) counts.set(tag, (counts.get(tag) ?? 0) + 1);
+}
+const tags = [...counts.entries()].sort((a, b) => a[0].localeCompare(b[0], 'zh-CN'));
+---
+
+<ArchiveLayout title="TAGS" index="05" kicker="SIGNAL INDEX" description="沿着关键词，寻找散落在不同栏目里的同一条线索。">
+	{tags.length > 0 ? (
+		<nav class="tag-cloud" aria-label="全部标签">
+			{tags.map(([tag, count]) => <a href={`/tags/${encodeURIComponent(tag)}/`}>#{tag}<small>{count}</small></a>)}
+		</nav>
+	) : (
+		<section class="empty-state"><strong>NO TAGS YET</strong><p>文章发布后，标签会自动汇总到这里。</p></section>
+	)}
+</ArchiveLayout>

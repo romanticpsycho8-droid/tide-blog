@@ -1,0 +1,41 @@
+---
+import { getCollection } from 'astro:content';
+import PostCard from '../components/PostCard.astro';
+import { sections, type SectionSlug } from '../data/sections';
+import ArchiveLayout from '../layouts/ArchiveLayout.astro';
+import { visiblePosts } from '../lib/posts';
+
+export function getStaticPaths() {
+	return sections.map((section) => ({ params: { section: section.slug }, props: { section } }));
+}
+
+type Section = (typeof sections)[number];
+interface Props { section: Section }
+
+const { section } = Astro.props;
+const posts = visiblePosts(await getCollection('blog', ({ data }) => data.category === (section.slug as SectionSlug)));
+---
+
+<ArchiveLayout
+	title={section.en}
+	index={section.number}
+	kicker={section.code}
+	description={`${section.zh}。${section.statement}`}
+>
+	<div class="channel-status" aria-label="栏目状态">
+		<span><b>{String(posts.length).padStart(2, '0')}</b> PUBLISHED SIGNALS</span>
+		<i></i>
+		<span>CHANNEL / {section.number}</span>
+		<span class="channel-live">● ARCHIVE ONLINE</span>
+	</div>
+	{posts.length > 0 ? (
+		<section class="post-list" aria-label={`${section.zh}文章`}>
+			{posts.map((post, index) => <PostCard post={post} order={index} />)}
+		</section>
+	) : (
+		<section class="empty-state">
+			<strong>WAITING FOR THE NEXT TIDE</strong>
+			<p>这个栏目还没有正式发布的文章。内容系统已经准备好，下一次提交 Markdown 文件时，它会自动出现在这里。</p>
+		</section>
+	)}
+</ArchiveLayout>

@@ -1,0 +1,73 @@
+---
+import '@fontsource/anton';
+import '@fontsource/barlow-condensed/400.css';
+import '@fontsource/barlow-condensed/600.css';
+import '@fontsource/barlow-condensed/700.css';
+import '@fontsource/cormorant-garamond/600.css';
+import '@fontsource/cormorant-garamond/600-italic.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/600.css';
+import '../styles/archive.css';
+
+import { sections } from '../data/sections';
+
+interface Props {
+	title: string;
+	description?: string;
+	index?: string;
+	kicker?: string;
+	compactHeading?: boolean;
+}
+
+const {
+	title,
+	description = 'tide 的个人博客，记录随笔、计算机科学、校园生活与未来规划。',
+	index = '00',
+	kicker = 'PERSONAL ARCHIVE',
+	compactHeading = false,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="theme-color" content="#03184d" />
+		<meta name="description" content={description} />
+		<title>{title} — tide</title>
+	</head>
+	<body>
+		<div class="archive-shell">
+			<div class="archive-grid" aria-hidden="true"></div>
+			<div class="archive-glow" aria-hidden="true"></div>
+			<div class="archive-depth" aria-hidden="true"><span>00</span><i></i><span>∞</span></div>
+			<header class="archive-header">
+				<a class="archive-brand" href="/" aria-label="返回 tide 首页">
+					<span>00</span><strong>tide</strong>
+				</a>
+				<nav aria-label="主要栏目">
+					<a href="/blog/">ALL</a>
+					{sections.map((section) => <a href={section.href}>{section.en}</a>)}
+					<a href="/tags/">TAGS</a>
+				</nav>
+			</header>
+
+			<main class="archive-main">
+				<header class:list={['page-heading', { compact: compactHeading }]}>
+					<p><span>{index}</span>{kicker}</p>
+					<h1>{title}</h1>
+					{description && <div class="heading-line"><i></i><p>{description}</p></div>}
+				</header>
+				<slot />
+			</main>
+
+			<footer class="archive-footer">
+				<span>22.5431° N / 114.0579° E</span>
+				<span>THE SEA REMEMBERS EVERYTHING</span>
+				<span>© {new Date().getFullYear()} TIDE</span>
+			</footer>
+		</div>
+	</body>
+</html>

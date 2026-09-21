@@ -12,6 +12,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# local generated-image working files
+tmp/
+
 
 # environment variables
 .env

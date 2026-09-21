@@ -1,0 +1,30 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { formatPostDate } from '../lib/posts';
+
+interface Props {
+	post: CollectionEntry<'blog'>;
+	order?: number;
+}
+
+const { post, order = 0 } = Astro.props;
+const number = String(order + 1).padStart(2, '0');
+---
+
+<article class="post-card">
+	<a href={`/posts/${post.id}/`}>
+		<div class="post-card-meta">
+			<span>{number}</span>
+			<time datetime={post.data.publishedAt.toISOString()}>{formatPostDate(post.data.publishedAt)}</time>
+			{post.data.draft && <b>DRAFT</b>}
+		</div>
+		<h2>{post.data.title}</h2>
+		<p>{post.data.description}</p>
+		<div class="post-card-footer">
+			<ul aria-label="标签">
+				{post.data.tags.map((tag) => <li>#{tag}</li>)}
+			</ul>
+			<span class="post-arrow" aria-hidden="true">↗</span>
+		</div>
+	</a>
+</article>

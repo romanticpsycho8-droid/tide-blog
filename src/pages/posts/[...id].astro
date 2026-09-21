@@ -1,0 +1,81 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { getSection } from '../../data/sections';
+import ArchiveLayout from '../../layouts/ArchiveLayout.astro';
+import { formatPostDate, visiblePosts } from '../../lib/posts';
+
+export async function getStaticPaths() {
+	const posts = visiblePosts(await getCollection('blog'));
+	return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+}
+
+interface Props { post: CollectionEntry<'blog'> }
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+const section = getSection(post.data.category);
+const allPosts = visiblePosts(await getCollection('blog'));
+const postIndex = allPosts.findIndex((entry) => entry.id === post.id);
+const newerPost = postIndex > 0 ? allPosts[postIndex - 1] : undefined;
+const olderPost = postIndex >= 0 ? allPosts[postIndex + 1] : undefined;
+const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+---
+
+<ArchiveLayout title={post.data.title} description={post.data.description} index={section?.number} kicker={section?.en} compactHeading>
+	<div class="reading-progress" data-reading-progress aria-hidden="true"></div>
+	<article>
+		<header class="article-head">
+			<div class="article-meta">
+				<time datetime={post.data.publishedAt.toISOString()}>PUBLISHED / {formatPostDate(post.data.publishedAt)}</time>
+				{post.data.updatedAt && <time datetime={post.data.updatedAt.toISOString()}>UPDATED / {formatPostDate(post.data.updatedAt)}</time>}
+				{section && <a href={section.href}>{section.zh} / {section.en}</a>}
+				{post.data.draft && <span>DRAFT PREVIEW</span>}
+			</div>
+			{post.data.tags.length > 0 && (
+				<ul class="article-tags" aria-label="文章标签">
+					{post.data.tags.map((tag) => <li><a href={`/tags/${encodeURIComponent(tag)}/`}>#{tag}</a></li>)}
+				</ul>
+			)}
+		</header>
+		<div class:list={['article-reader', { 'without-toc': toc.length === 0 }]}>
+			{toc.length > 0 && (
+				<aside class="article-toc" aria-label="文章目录">
+					<p><span>INDEX</span> CONTENT MAP</p>
+					<ol>
+						{toc.map((heading, index) => (
+							<li class:list={{ nested: heading.depth === 3 }}>
+								<a href={`#${heading.slug}`}><span>{String(index + 1).padStart(2, '0')}</span>{heading.text}</a>
+							</li>
+						))}
+					</ol>
+					<i></i>
+					<small>SCROLL DEPTH<br /><b data-reading-percent>000%</b></small>
+				</aside>
+			)}
+			<div class="article-body" data-article-body>
+				<Content />
+			</div>
+		</div>
+		<nav class="article-pagination" aria-label="前后文章">
+			{newerPost ? <a href={`/posts/${newerPost.id}/`}><small>← NEWER SIGNAL</small><strong>{newerPost.data.title}</strong></a> : <span></span>}
+			{olderPost ? <a class="next" href={`/posts/${olderPost.id}/`}><small>OLDER SIGNAL →</small><strong>{olderPost.data.title}</strong></a> : <a class="next" href={section?.href ?? '/blog/'}><small>BACK TO CHANNEL →</small><strong>{section?.zh ?? '全部文章'}</strong></a>}
+		</nav>
+	</article>
+	<button class="back-to-top" type="button" data-back-to-top aria-label="返回页面顶部"><span>↑</span>TOP</button>
+	<script>
+		const progress = document.querySelector<HTMLElement>('[data-reading-progress]');
+		const percent = document.querySelector<HTMLElement>('[data-reading-percent]');
+		const toTop = document.querySelector<HTMLButtonElement>('[data-back-to-top]');
+
+		function updateReadingDepth() {
+			const max = document.documentElement.scrollHeight - window.innerHeight;
+			const value = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+			if (progress) progress.style.transform = `scaleX(${value})`;
+			if (percent) percent.textContent = `${String(Math.round(value * 100)).padStart(3, '0')}%`;
+			if (toTop) toTop.classList.toggle('visible', window.scrollY > 420);
+		}
+
+		window.onscroll = updateReadingDepth;
+		if (toTop) toTop.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+		updateReadingDepth();
+	</script>
+</ArchiveLayout>

@@ -1,0 +1,22 @@
+---
+import { getCollection } from 'astro:content';
+import PostCard from '../../components/PostCard.astro';
+import ArchiveLayout from '../../layouts/ArchiveLayout.astro';
+import { visiblePosts } from '../../lib/posts';
+
+export async function getStaticPaths() {
+	const posts = visiblePosts(await getCollection('blog'));
+	const tags = [...new Set(posts.flatMap((post) => post.data.tags))];
+	return tags.map((tag) => ({ params: { tag }, props: { tag } }));
+}
+
+interface Props { tag: string }
+const { tag } = Astro.props;
+const posts = visiblePosts(await getCollection('blog', ({ data }) => data.tags.includes(tag)));
+---
+
+<ArchiveLayout title={`#${tag}`} index="05" kicker="TAGGED SIGNAL" description={`所有带有“${tag}”标签的文章。`}>
+	<section class="post-list" aria-label={`${tag}标签文章`}>
+		{posts.map((post, index) => <PostCard post={post} order={index} />)}
+	</section>
+</ArchiveLayout>
