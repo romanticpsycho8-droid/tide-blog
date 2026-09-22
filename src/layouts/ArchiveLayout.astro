@@ -9,6 +9,7 @@ import '@fontsource/ibm-plex-mono/400.css';
 import '@fontsource/ibm-plex-mono/600.css';
 import '../styles/archive.css';
 
+import SeoHead from '../components/SeoHead.astro';
 import { sections } from '../data/sections';
 
 interface Props {
@@ -17,6 +18,9 @@ interface Props {
 	index?: string;
 	kicker?: string;
 	compactHeading?: boolean;
+	ogType?: 'website' | 'article';
+	publishedTime?: Date;
+	modifiedTime?: Date;
 }
 
 const {
@@ -25,7 +29,12 @@ const {
 	index = '00',
 	kicker = 'PERSONAL ARCHIVE',
 	compactHeading = false,
+	ogType = 'website',
+	publishedTime,
+	modifiedTime,
 } = Astro.props;
+
+const documentTitle = `${title} — tide`;
 ---
 
 <!doctype html>
@@ -36,7 +45,10 @@ const {
 		<meta name="generator" content={Astro.generator} />
 		<meta name="theme-color" content="#03184d" />
 		<meta name="description" content={description} />
-		<title>{title} — tide</title>
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" sizes="any" />
+		<SeoHead title={documentTitle} description={description} type={ogType} publishedTime={publishedTime} modifiedTime={modifiedTime} />
+		<title>{documentTitle}</title>
 	</head>
 	<body>
 		<div class="archive-shell">

@@ -20,7 +20,16 @@ const olderPost = postIndex >= 0 ? allPosts[postIndex + 1] : undefined;
 const toc = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
 ---
 
-<ArchiveLayout title={post.data.title} description={post.data.description} index={section?.number} kicker={section?.en} compactHeading>
+<ArchiveLayout
+	title={post.data.title}
+	description={post.data.description}
+	index={section?.number}
+	kicker={section?.en}
+	compactHeading
+	ogType="article"
+	publishedTime={post.data.publishedAt}
+	modifiedTime={post.data.updatedAt}
+>
 	<div class="reading-progress" data-reading-progress aria-hidden="true"></div>
 	<article>
 		<header class="article-head">

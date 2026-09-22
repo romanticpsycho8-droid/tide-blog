@@ -8,7 +8,11 @@ import '@fontsource/cormorant-garamond/600-italic.css';
 import '@fontsource/ibm-plex-mono/400.css';
 import '@fontsource/ibm-plex-mono/600.css';
 import '@yunyoujun/ak-ui/tokens.css';
+import SeoHead from '../components/SeoHead.astro';
 import { sections } from '../data/sections';
+
+const title = 'tide — personal archive';
+const description = 'tide 的个人博客，记录随笔、计算机科学、校园生活与未来规划。';
 ---
 
 <!doctype html>
@@ -18,8 +22,11 @@ import { sections } from '../data/sections';
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="generator" content={Astro.generator} />
 		<meta name="theme-color" content="#03184d" />
-		<meta name="description" content="tide 的个人博客，记录随笔、计算机科学、校园生活与未来规划。" />
-		<title>tide — personal archive</title>
+		<meta name="description" content={description} />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" sizes="any" />
+		<SeoHead title={title} description={description} />
+		<title>{title}</title>
 		<script is:inline>
 			try {
 				if (sessionStorage.getItem('tide:intro-seen') === '1') {
