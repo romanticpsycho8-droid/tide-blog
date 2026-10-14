@@ -1,43 +1,56 @@
-# Astro Starter Kit: Minimal
+# tide
+
+一个以深蓝海洋与潮汐为视觉主题的个人博客，保存学习笔记、校园生活、随笔和未来计划。
+
+> 在潮汐之间，保存此刻的我。
+
+## 网站特色
+
+- **海浪入场动画**：从海底氛围进入主页，层叠海浪与卷浪依次掀起，配合人物插画和文字退场，形成完整的入场过程。
+- **深蓝视觉与杂志式排版**：深蓝背景、海洋插画、醒目的标题、细线网格与状态栏共同构成首页；中英文字体搭配，兼顾视觉表达与阅读。
+- **四个内容栏目**：随笔与碎片、计算机科学、大学生活、未来航线。首页以四块栏目卡片作为入口，内页提供各栏目文章归档。
+- **文章与标签归档**：支持文章列表、独立文章页、标签索引与标签文章页；文章按发布时间排序，草稿在生产环境隐藏。
+- **Markdown / MDX 写作**：内容与页面代码分开管理，文章通过标题、摘要、日期、栏目和标签等元数据组织。
+- **适配不同阅读场景**：布局随屏幕宽度调整；同一浏览会话内记住已完成的入场动画，并尊重系统的减少动态效果设置。
+- **统一页面元信息**：共享 canonical、Open Graph 和 Twitter Card 元信息，文章支持发布与更新日期，构建时生成站点地图和 robots.txt。
+
+## 技术栈
+
+Astro · TypeScript · Markdown / MDX · GSAP · CSS
+
+网站采用静态构建，交互主要用于首页入场动画。栏目配置位于 `src/data/sections.ts`，文章存放在 `src/content/blog/`。
+
+## 本地运行
+
+需要 Node.js 22.12 或更高版本。
 
 ```sh
-npm create astro@latest -- --template minimal
+npm ci
+npm run dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## 构建与网址配置
 
-## 🚀 Project Structure
+具体部署网址由环境变量 `SITE_URL` 提供，不写入仓库源码。未设置时，本地开发使用 `http://localhost:4321`；生产构建要求提供实际网址，以正确生成页面元信息与站点地图。
 
-Inside of your Astro project, you'll see the following folders and files:
+复制 `.env.example` 为 `.env`，将示例值替换为自己的部署网址。`.env` 与各环境的本地配置文件已被 Git 忽略，请勿提交真实配置。
+
+```sh
+npm run build
+npm run preview
+```
+
+部署平台也需要在**构建环境**中设置 `SITE_URL`，仅设置运行时变量不会改变已经生成的静态页面。构建产物位于 `dist/`。
+
+## 目录结构
 
 ```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+public/images/         海洋与人物插画
+src/components/        文章卡片、页面元信息
+src/content/blog/      Markdown / MDX 文章
+src/data/              栏目定义
+src/layouts/           归档页面布局
+src/lib/               文章筛选与日期格式化
+src/pages/             首页、栏目、文章、标签与 robots.txt
+src/styles/            内页样式
 ```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
