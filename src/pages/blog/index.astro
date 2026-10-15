@@ -1,10 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
 import PostCard from '../../components/PostCard.astro';
+import ArchiveSearch from '../../components/ArchiveSearch.astro';
 import ArchiveLayout from '../../layouts/ArchiveLayout.astro';
 import { visiblePosts } from '../../lib/posts';
 
-const posts = visiblePosts(await getCollection('blog'));
+const posts = visiblePosts(await getCollection('blog')).filter(post => !post.data.draft);
 ---
 
 <ArchiveLayout
@@ -13,9 +14,10 @@ const posts = visiblePosts(await getCollection('blog'));
 	kicker="FULL ARCHIVE"
 	description="所有被潮水留下的记录，按照写下它们的时间排列。"
 >
+	<ArchiveSearch />
 	{posts.length > 0 ? (
 		<section class="post-list" aria-label="全部文章">
-			{posts.map((post, index) => <PostCard post={post} order={index} />)}
+			{posts.map((post, index) => <div data-category={post.data.category} data-search-text={`${post.data.title} ${post.data.description} ${post.data.tags.join(' ')}`.normalize('NFKC').toLocaleLowerCase()}><PostCard post={post} order={index} /></div>)}
 		</section>
 	) : (
 		<section class="empty-state">

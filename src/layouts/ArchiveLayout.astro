@@ -10,6 +10,7 @@ import '@fontsource/ibm-plex-mono/600.css';
 import '../styles/archive.css';
 
 import SeoHead from '../components/SeoHead.astro';
+import UtilityNav from '../components/UtilityNav.astro';
 import { sections } from '../data/sections';
 
 interface Props {
@@ -51,6 +52,7 @@ const documentTitle = `${title} — tide`;
 		<title>{documentTitle}</title>
 	</head>
 	<body>
+		<a class="skip-link" href="#main-content">跳到正文</a>
 		<div class="archive-shell">
 			<div class="archive-grid" aria-hidden="true"></div>
 			<div class="archive-glow" aria-hidden="true"></div>
@@ -60,13 +62,14 @@ const documentTitle = `${title} — tide`;
 					<span>00</span><strong>tide</strong>
 				</a>
 				<nav aria-label="主要栏目">
-					<a href="/blog/">ALL</a>
-					{sections.map((section) => <a href={section.href}>{section.en}</a>)}
-					<a href="/tags/">TAGS</a>
+					<a href="/blog/" aria-current={Astro.url.pathname === '/blog/' ? 'page' : undefined}>ALL</a>
+					{sections.map((section) => <a href={section.href} aria-current={Astro.url.pathname === section.href ? 'page' : undefined}>{section.en}</a>)}
+					<a href="/tags/" aria-current={Astro.url.pathname.startsWith('/tags/') ? 'page' : undefined}>TAGS</a>
 				</nav>
 			</header>
 
-			<main class="archive-main">
+			<div class="utility-strip"><UtilityNav /></div>
+			<main class="archive-main" id="main-content" tabindex="-1">
 				<header class:list={['page-heading', { compact: compactHeading }]}>
 					<p><span>{index}</span>{kicker}</p>
 					<h1>{title}</h1>

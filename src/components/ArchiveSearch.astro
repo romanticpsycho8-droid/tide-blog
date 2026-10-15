@@ -1,0 +1,40 @@
+---
+import { sections } from '../data/sections';
+---
+<form class="search-console" role="search" hidden id="archive-search">
+  <div><label for="search-query">寻找一段记录</label><input id="search-query" name="q" type="search" placeholder="搜索标题、摘要、标签…" autocomplete="off" /></div>
+  <div><label for="search-category">栏目</label><select name="category" id="search-category"><option value="">全部栏目</option>{sections.map(s => <option value={s.slug}>{s.zh}</option>)}</select></div>
+  <button type="reset" class="signal-button">重置</button>
+  <p id="search-status" role="status"></p>
+</form>
+<script>
+  const form = document.querySelector<HTMLFormElement>('#archive-search')!;
+  const input = form.querySelector<HTMLInputElement>('input')!;
+  const select = form.querySelector<HTMLSelectElement>('select')!;
+  const cards = [...document.querySelectorAll<HTMLElement>('[data-search-text]')];
+  const status = document.querySelector('#search-status')!;
+  form.hidden = false;
+  function filter(sync = true) {
+    const tokens = input.value.normalize('NFKC').toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
+    let count = 0;
+    for (const card of cards) {
+      const match = tokens.every(t => card.dataset.searchText!.includes(t)) && (!select.value || card.dataset.category === select.value);
+      card.hidden = !match;
+      if(match) count++;
+    }
+    status.textContent = cards.length === 0 ? '还没有已发布的文章。你可以先浏览四个栏目。' : count ? `找到 ${count} 篇记录` : '没有找到匹配的记录。试试其他关键词，或重置筛选。';
+    if(sync) {
+      const url = new URL(location.href);
+      input.value.trim() ? url.searchParams.set('q', input.value.trim()) : url.searchParams.delete('q');
+      select.value ? url.searchParams.set('category', select.value) : url.searchParams.delete('category');
+      history.replaceState(null, '', url);
+    }
+  }
+  function restore() { const params = new URLSearchParams(location.search); input.value = params.get('q') || ''; select.value = params.get('category') || ''; filter(false); }
+  form.addEventListener('submit', e => { e.preventDefault(); filter(); });
+  input.addEventListener('input', () => filter());
+  select.addEventListener('change', () => filter());
+  form.addEventListener('reset', event => { event.preventDefault(); input.value = ''; select.value = ''; filter(); });
+  window.addEventListener('popstate', restore);
+  restore();
+</script>

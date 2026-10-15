@@ -9,6 +9,7 @@ import '@fontsource/ibm-plex-mono/400.css';
 import '@fontsource/ibm-plex-mono/600.css';
 import '@yunyoujun/ak-ui/tokens.css';
 import SeoHead from '../components/SeoHead.astro';
+import UtilityNav from '../components/UtilityNav.astro';
 import { sections } from '../data/sections';
 
 const title = 'tide — personal archive';
@@ -103,7 +104,7 @@ const description = 'tide 的个人博客，记录随笔、计算机科学、校
 
 				<footer class="status-strip">
 					<span>22.5431° N / 114.0579° E</span>
-					<span>SCROLL TO EXPLORE</span>
+					<UtilityNav />
 					<span class="current">CURRENT / 01</span>
 				</footer>
 			</div>
@@ -817,6 +818,7 @@ const description = 'tide 的个人博客，记录随笔、计算机科学、校
 	}
 
 	.status-strip {
+		align-items: center;
 		position: relative;
 		z-index: 10;
 		display: flex;
@@ -862,7 +864,8 @@ const description = 'tide 的个人博客，记录随笔、计算机科学、校
 		.section-card strong { font-size: 0.72rem; }
 		.section-card small { display: none; }
 		.status-strip { font-size: 0.52rem; }
-		.status-strip span:nth-child(2) { display: none; }
+		.status-strip > span { display: none; }
+		.status-strip { justify-content: center; }
 	}
 
 	@media (prefers-reduced-motion: no-preference) {

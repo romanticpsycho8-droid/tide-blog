@@ -1,0 +1,13 @@
+---
+const links = [ ['/blog/', '文章检索'], ['/about/', '关于 tide'], ['/friends/', '友链'], ['/rss.xml', 'RSS 订阅'] ];
+---
+<nav class="utility-nav" aria-label="个人空间导航">
+  {links.map(([href, label]) => <a href={href} aria-current={Astro.url.pathname === href ? 'page' : undefined}>{label}</a>)}
+</nav>
+<style>
+  .utility-nav { display:flex; flex-wrap:wrap; gap:4px 20px; align-items:center; }
+  a { color:inherit; text-decoration:none; padding:8px 2px; min-height:36px; font:600 .8rem 'Barlow Condensed','Microsoft YaHei',sans-serif; letter-spacing:.06em; }
+  a:hover, a[aria-current] { color:#5de1f4; text-decoration:underline; text-underline-offset:6px; }
+  a:focus-visible { outline:2px solid #ff6375; outline-offset:3px; }
+  @media(max-width:760px) { .utility-nav { gap:4px 14px; } a { font-size:.72rem; } }
+</style>

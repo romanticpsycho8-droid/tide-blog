@@ -1,0 +1,23 @@
+---
+import ArchiveLayout from '../layouts/ArchiveLayout.astro';
+import { friends, siteCard } from '../data/friends';
+---
+<ArchiveLayout title="FRIEND SIGNALS" kicker="CONNECTED SHORES" description="从这片海，走向别人的世界。">
+  <div class="friends-layout">
+    <section aria-label="友情链接">
+      {friends.length ? <div class="channel-directory">{friends.map(friend => <a class="signal-panel" href={friend.url} target="_blank" rel="noopener noreferrer"><h2>{friend.name} ↗</h2><p>{friend.description}</p><small>{new URL(friend.url).hostname}</small></a>)}</div> : <div class="signal-panel"><small>等待下一束信号</small><h2>给相遇留个位置。</h2><p>友链还在慢慢收集。这里会记录那些值得反复走访的个人网站。</p><a class="quiet-link" href="/blog/">先在 tide 逛逛 →</a></div>}
+    </section>
+    <aside class="signal-panel link-card"><h2>本站信息</h2><p>欢迎把 tide 加入你的书签或友链。</p><pre id="site-card">{siteCard}</pre><button class="signal-button" id="copy-site" type="button" hidden>复制友链信息</button><p id="copy-status" role="status"></p></aside>
+  </div>
+</ArchiveLayout>
+<script>
+  const button = document.querySelector<HTMLButtonElement>('#copy-site');
+  if (button) {
+    button.hidden = false;
+    button.addEventListener('click', async () => {
+      const status = document.querySelector<HTMLElement>('#copy-status')!;
+      try { await navigator.clipboard.writeText(document.querySelector('#site-card')!.textContent!); status.textContent = '已复制，可以粘贴到你的友链页面。'; }
+      catch { status.textContent = '浏览器未允许复制，请选中上方信息手动复制。'; }
+    });
+  }
+</script>

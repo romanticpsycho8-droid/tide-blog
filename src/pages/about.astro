@@ -1,0 +1,19 @@
+---
+import ArchiveLayout from '../layouts/ArchiveLayout.astro';
+import { sections } from '../data/sections';
+---
+<ArchiveLayout title="ABOUT TIDE" kicker="BEHIND THE WAVES" description="在潮汐之间，保存此刻的我。">
+  <div class="profile-split">
+    <div class="profile-art"><img src="/images/tide-boy-cel.png" width="1672" height="941" alt="蓝色水中戴着耳机的少年" /><span>tide</span></div>
+    <section class="signal-panel">
+      <h2>你好，我是 tide。</h2>
+      <p>这里是我的个人空间。随笔、计算机科学、哈工深的大学生活，还有关于未来的计划，都汇入同一片海。</p>
+      <p>有些记录是为了把知识讲清楚，有些只是为了记住当时的自己。</p>
+      <a class="signal-button" href="/blog/">翻阅文章</a>
+      <a class="quiet-link" href="https://github.com/romanticpsycho8-droid/tide-blog" target="_blank" rel="noopener noreferrer">网站源码 ↗</a>
+    </section>
+  </div>
+  <section class="channel-directory" aria-label="内容地图">
+    {sections.map(section => <a class="signal-panel" href={section.href}><small>{section.en}</small><h2>{section.zh}</h2><p>{section.statement}</p></a>)}
+  </section>
+</ArchiveLayout>
