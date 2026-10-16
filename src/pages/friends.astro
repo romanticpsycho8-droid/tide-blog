@@ -3,6 +3,10 @@ import ArchiveLayout from '../layouts/ArchiveLayout.astro';
 import { friends, siteCard } from '../data/friends';
 ---
 <ArchiveLayout title="FRIEND SIGNALS" kicker="CONNECTED SHORES" description="从这片海，走向别人的世界。">
+  <section class="friends-sonar" aria-label="友链信号站">
+    <div class="sonar-disc" aria-hidden="true"><div class="sonar-cross"></div><span>tide</span><i></i></div>
+    <div class="sonar-intro"><p>不是孤岛，是群岛。</p><h2>OTHER<br /><em>SHORES.</em></h2><div class="sonar-count"><b>{String(friends.length).padStart(2,'0')}</b><span>已连接的个人网站<br />每一次相遇，都值得被记住。</span></div></div>
+  </section>
   <div class="friends-layout">
     <section aria-label="友情链接">
       {friends.length ? <div class="channel-directory">{friends.map(friend => <a class="signal-panel" href={friend.url} target="_blank" rel="noopener noreferrer"><h2>{friend.name} ↗</h2><p>{friend.description}</p><small>{new URL(friend.url).hostname}</small></a>)}</div> : <div class="signal-panel"><small>等待下一束信号</small><h2>给相遇留个位置。</h2><p>友链还在慢慢收集。这里会记录那些值得反复走访的个人网站。</p><a class="quiet-link" href="/blog/">先在 tide 逛逛 →</a></div>}
@@ -21,3 +25,15 @@ import { friends, siteCard } from '../data/friends';
     });
   }
 </script>
+<style>
+  .friends-sonar { display:grid; grid-template-columns:1fr 1fr; background:linear-gradient(135deg,#0878c955,#020a28); border:1px solid #5de1f455; margin-bottom:30px; overflow:hidden; }
+  .sonar-disc { position:relative; width:80%; aspect-ratio:1; margin:10%; border:1px solid #5de1f477; border-radius:50%; background:repeating-radial-gradient(circle at center,transparent 0 20%,#5de1f422 20.2% 20.6%,transparent 21% 40%); display:grid; place-items:center; }
+  .sonar-disc::before { content:''; position:absolute; inset:8%; border:18px solid #5de1f40a; border-right-color:#5de1f433; border-radius:50%; transform:rotate(-35deg); }
+  .sonar-cross { position:absolute; inset:0; background:linear-gradient(90deg,transparent calc(50% - .5px),#5de1f444 50%,transparent calc(50% + .5px)),linear-gradient(transparent calc(50% - .5px),#5de1f444 50%,transparent calc(50% + .5px)); }
+  .sonar-disc>span { position:relative; font:italic clamp(3rem,7vw,6rem) 'Cormorant Garamond',serif; color:#f5fbff; }
+  .sonar-disc>i { position:absolute; width:10px; height:10px; border-radius:50%; background:#ff6375; top:21%; right:25%; box-shadow:0 0 0 7px #ff637522; }
+  .sonar-intro { padding:35px 25px; align-content:center; }.sonar-intro>p { color:#5de1f4; font-size:.9rem; }
+  .sonar-intro h2 { font:italic clamp(3.5rem,7vw,7rem)/.95 'Anton',sans-serif; letter-spacing:-.03em; margin:25px 0; }.sonar-intro em { color:#5de1f4; font-style:inherit; }
+  .sonar-count { display:flex; gap:20px; align-items:center; border-top:1px solid #5de1f455; padding-top:20px; }.sonar-count b { font:3rem 'Anton',sans-serif; }.sonar-count span { font-size:.75rem; line-height:1.8; color:#b9d4e8; }
+  @media(max-width:760px) { .friends-sonar { grid-template-columns:1fr; }.sonar-disc { width:65%; margin:8% auto 0; }.sonar-intro { padding:20px 25px 30px; }.sonar-intro h2 { font-size:4rem; } }
+</style>

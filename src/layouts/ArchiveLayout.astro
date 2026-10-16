@@ -11,6 +11,7 @@ import '../styles/archive.css';
 
 import SeoHead from '../components/SeoHead.astro';
 import UtilityNav from '../components/UtilityNav.astro';
+import SignalTerminal from '../components/SignalTerminal.astro';
 import { sections } from '../data/sections';
 
 interface Props {
@@ -68,7 +69,7 @@ const documentTitle = `${title} — tide`;
 				</nav>
 			</header>
 
-			<div class="utility-strip"><UtilityNav /></div>
+			<div class="utility-strip"><UtilityNav /><SignalTerminal /></div>
 			<main class="archive-main" id="main-content" tabindex="-1">
 				<header class:list={['page-heading', { compact: compactHeading }]}>
 					<p><span>{index}</span>{kicker}</p>

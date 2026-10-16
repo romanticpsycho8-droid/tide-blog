@@ -1,0 +1,54 @@
+<button class="terminal-trigger" type="button" aria-haspopup="dialog" data-terminal-open><span aria-hidden="true">⌕</span> 跃迁 <kbd>Ctrl K</kbd></button>
+<dialog class="signal-terminal" aria-labelledby="terminal-title">
+  <div class="terminal-top"><h2 id="terminal-title">你想去往哪片海？</h2><button type="button" data-terminal-close aria-label="关闭快捷导航">×</button></div>
+  <label for="terminal-input">搜索入口，或输入文章关键词</label>
+  <input id="terminal-input" type="search" autocomplete="off" placeholder="例如：随笔、友链、C++…" />
+  <nav aria-label="快捷导航" class="terminal-results">
+    <a href="/explore/" data-keywords="探索 航图 海图 explore">探索航图 <span>所有航线</span></a>
+    <a href="/essays/" data-keywords="随笔 碎片 essays">随笔与碎片 <span>私人注脚</span></a>
+    <a href="/computing/" data-keywords="cs 计算机 科学 computing 系统">计算机科学 <span>代码与系统</span></a>
+    <a href="/hitsz/" data-keywords="校园 大学 哈工深 hitsz">大学生活 <span>校园记录</span></a>
+    <a href="/roadmap/" data-keywords="未来 规划 roadmap">未来航线 <span>计划与复盘</span></a>
+    <a href="/about/" data-keywords="关于 about tide">关于 tide <span>人物档案</span></a>
+    <a href="/friends/" data-keywords="友链 friends">友情链接 <span>来自远方</span></a>
+  </nav>
+  <a class="terminal-search" href="/blog/" data-terminal-search>在文章中搜索 <span aria-hidden="true">↗</span></a>
+  <p class="terminal-hint">Tab 选择入口 · Enter 前往 · Esc 返回</p>
+</dialog>
+<script>
+  const terminal = document.querySelector<HTMLDialogElement>('.signal-terminal')!;
+  const input = terminal.querySelector<HTMLInputElement>('input')!;
+  const links = [...terminal.querySelectorAll<HTMLAnchorElement>('[data-keywords]')];
+  const search = terminal.querySelector<HTMLAnchorElement>('[data-terminal-search]')!;
+  let previousFocus: HTMLElement | null = null;
+  function openTerminal() { if(terminal.open) return; previousFocus = document.activeElement as HTMLElement; terminal.showModal(); input.focus(); }
+  document.querySelector('[data-terminal-open]')?.addEventListener('click', openTerminal);
+  terminal.querySelector('[data-terminal-close]')?.addEventListener('click', () => terminal.close());
+  terminal.addEventListener('close', () => previousFocus?.focus());
+  terminal.addEventListener('keydown', event => { if(event.key==='Escape') { event.preventDefault(); terminal.close(); } });
+  terminal.addEventListener('click', event => { if(event.target === terminal) { const r=terminal.getBoundingClientRect(); if(event.clientX<r.left || event.clientX>r.right || event.clientY<r.top || event.clientY>r.bottom) terminal.close(); } });
+  document.addEventListener('keydown', event => { if((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); terminal.open ? terminal.close() : openTerminal(); } });
+  input.addEventListener('input', () => { const query=input.value.trim().normalize('NFKC').toLowerCase(); for(const link of links) link.hidden=!link.dataset.keywords!.toLowerCase().includes(query); search.href=`/blog/?q=${encodeURIComponent(input.value.trim())}`; });
+  input.addEventListener('keydown', event => { if(event.key==='Enter') { event.preventDefault(); location.href=search.href; } if(event.key==='ArrowDown') { event.preventDefault(); (links.find(link=>!link.hidden)||search).focus(); } });
+</script>
+<style>
+  .terminal-trigger { padding:10px 16px; border:1px solid #5de1f4; background:#03174d; color:#fff; font:600 .85rem 'Microsoft YaHei',sans-serif; cursor:pointer; box-shadow:3px 3px #0878c9; }
+  .terminal-trigger:hover { background:#075bb0; }
+  kbd { margin-left:12px; font-size:.65rem; color:#5de1f4; }
+  dialog { width:min(620px,calc(100% - 32px)); max-height:85svh; overflow:auto; padding:26px; border:2px solid #5de1f4; background:#03174d; color:#f5fbff; box-shadow:12px 12px 0 #0878c9; overscroll-behavior:contain; }
+  dialog::backdrop { background:rgb(0 7 30 / 85%); backdrop-filter:blur(10px); }
+  .terminal-top { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  h2 { font-size:1.5rem; margin:0 0 20px; }
+  .terminal-top button { background:transparent; border:0; color:#5de1f4; font-size:2rem; cursor:pointer; }
+  label { display:block; margin-bottom:10px; font-size:.8rem; color:#b2d9ee; }
+  input { width:100%; padding:16px; border:1px solid #5de1f4; background:#020a28; color:white; font:inherit; }
+  .terminal-results { display:grid; margin-top:16px; }
+  a { display:flex; justify-content:space-between; padding:14px; color:#f5fbff; text-decoration:none; border-bottom:1px solid #204776; }
+  a:hover,a:focus-visible { background:#5de1f4; color:#020a28; }
+  a span { font-size:.75rem; opacity:.75; }
+  .terminal-search { background:#075bb0; margin-top:12px; }
+  .terminal-hint { font-size:.7rem; color:#b2d9ee; margin:20px 0 0; }
+  :focus-visible { outline:3px solid #ff6375; outline-offset:3px; }
+  [hidden] { display:none!important; }
+  @media(max-width:760px) { .terminal-trigger { padding:8px 12px; } kbd { display:none; } }
+</style>

@@ -3,17 +3,62 @@ import ArchiveLayout from '../layouts/ArchiveLayout.astro';
 import { sections } from '../data/sections';
 ---
 <ArchiveLayout title="ABOUT TIDE" kicker="BEHIND THE WAVES" description="在潮汐之间，保存此刻的我。">
-  <div class="profile-split">
-    <div class="profile-art"><img src="/images/tide-boy-cel.png" width="1672" height="941" alt="蓝色水中戴着耳机的少年" /><span>tide</span></div>
-    <section class="signal-panel">
-      <h2>你好，我是 tide。</h2>
-      <p>这里是我的个人空间。随笔、计算机科学、哈工深的大学生活，还有关于未来的计划，都汇入同一片海。</p>
-      <p>有些记录是为了把知识讲清楚，有些只是为了记住当时的自己。</p>
-      <a class="signal-button" href="/blog/">翻阅文章</a>
-      <a class="quiet-link" href="https://github.com/romanticpsycho8-droid/tide-blog" target="_blank" rel="noopener noreferrer">网站源码 ↗</a>
-    </section>
-  </div>
-  <section class="channel-directory" aria-label="内容地图">
-    {sections.map(section => <a class="signal-panel" href={section.href}><small>{section.en}</small><h2>{section.zh}</h2><p>{section.statement}</p></a>)}
+  <section class="identity-stage" aria-label="tide 的人物档案">
+    <div class="identity-background" aria-hidden="true">STILL<br />BECOMING.</div>
+    <div class="identity-portrait"><img src="/images/tide-boy-cel.png" width="1672" height="941" alt="戴着耳机，仰面漂浮在海水中的少年" /></div>
+    <div class="identity-stamp"><span>PERSONAL FILE</span><strong>tide</strong><span>并非定稿，仍在生长。</span></div>
+    <div class="identity-caption"><span>SHENZHEN / HITSZ</span><span>在潮汐之间，保存此刻的我。</span></div>
   </section>
+  <section class="identity-intro"><p>你好，我是 tide。</p><h2>一个人，<br />不止一种<span>潮汐。</span></h2><div><p>这里是我的个人空间。学习、生活、想象和计划，汇入同一片海。</p><p>有些记录为了把知识讲清楚，有些只是为了记住当时的自己。</p><a href="https://github.com/romanticpsycho8-droid/tide-blog" class="quiet-link" target="_blank" rel="noopener noreferrer">查看这片海的源码 ↗</a></div></section>
+  <section class="identity-sides" aria-label="我的四种侧面">
+    <div class="identity-tabs" role="group" aria-label="选择一个侧面">{sections.map((s,i)=><button type="button" data-side={s.slug} aria-pressed={i===0} aria-controls={`side-${s.slug}`}><span>{s.en}</span><strong>{s.zh}</strong></button>)}</div>
+    {sections.map((s,i)=><div class="identity-side" id={`side-${s.slug}`} hidden={i!==0}><span aria-hidden="true">{s.number}</span><h3>{s.note}</h3><p>{s.statement}</p><a class="signal-button" href={s.href}>阅读这些记录 ↗</a></div>)}
+  </section>
+  <a class="identity-next" href="/explore/"><span>下一站，由好奇心决定。</span><strong>探索我的内海 <i aria-hidden="true">↗</i></strong></a>
 </ArchiveLayout>
+<script>
+  const tabs=[...document.querySelectorAll<HTMLButtonElement>('[data-side]')];
+  const sides=[...document.querySelectorAll<HTMLElement>('.identity-side')];
+  function showSide(slug:string, sync=true) { if(!tabs.some(tab=>tab.dataset.side===slug)) slug='essays'; tabs.forEach(tab=>tab.setAttribute('aria-pressed',String(tab.dataset.side===slug))); sides.forEach(side=>side.hidden=side.id!==`side-${slug}`); if(sync) { const url=new URL(location.href); url.searchParams.set('side',slug); history.replaceState(null,'',url); } }
+  tabs.forEach(tab=>tab.addEventListener('click',()=>showSide(tab.dataset.side!)));
+  showSide(new URLSearchParams(location.search).get('side')||'essays',false);
+  window.addEventListener('popstate',()=>showSide(new URLSearchParams(location.search).get('side')||'essays',false));
+</script>
+<style>
+  .identity-stage { position:relative; height:clamp(450px,52vw,650px); background:linear-gradient(145deg,#0bbbe5,#064f9f 48%,#03174d); isolation:isolate; overflow:hidden; border:2px solid #b8f4ff; }
+  .identity-stage::after { position:absolute; content:''; inset:0; z-index:-1; background:repeating-linear-gradient(-16deg,transparent 0 70px,#b8f4ff22 71px 73px,transparent 74px 160px); }
+  .identity-background { position:absolute; top:9%; right:-2%; font:italic clamp(5rem,12vw,10rem)/.95 'Anton',sans-serif; letter-spacing:-.04em; color:#ffffff28; transform:rotate(-6deg); z-index:-1; }
+  .identity-portrait { position:absolute; inset:0; overflow:hidden; z-index:-1; }
+  .identity-portrait img { width:130%; max-width:none; height:100%; object-fit:cover; object-position:left 35%; }
+  .identity-stamp { position:absolute; right:4%; bottom:18%; transform:rotate(-7deg); display:grid; justify-items:start; }
+  .identity-stamp strong { color:#fff; font:italic clamp(7rem,18vw,16rem)/.8 'Cormorant Garamond',serif; text-shadow:8px 8px #03174d; letter-spacing:-.07em; }
+  .identity-stamp span { background:#f5fbff; color:#03174d; padding:10px 18px; font-weight:700; font-size:.8rem; letter-spacing:.1em; }
+  .identity-stamp span:first-child { background:#ff6375; color:#03174d; margin-bottom:18px; }
+  .identity-stamp span:last-child { margin:20px 0 0 25px; }
+  .identity-caption { position:absolute; bottom:0; inset-inline:0; display:flex; justify-content:space-between; padding:14px 20px; background:#03174dee; font:.65rem 'IBM Plex Mono','Microsoft YaHei',sans-serif; letter-spacing:.08em; }
+  .identity-intro { display:grid; grid-template-columns:1.1fr 1fr; gap:10px 55px; padding:70px 0; align-items:center; }
+  .identity-intro>p { grid-column:1/-1; color:#5de1f4; }
+  .identity-intro h2 { font:700 clamp(2.7rem,5vw,4.7rem)/1.3 'Microsoft YaHei',sans-serif; margin:0; letter-spacing:-.05em; }
+  .identity-intro h2 span { color:#5de1f4; }
+  .identity-intro div p { font-size:1rem; line-height:2; color:#cce4f5; }
+  .identity-intro .quiet-link { padding-left:0; color:#5de1f4; }
+  .identity-sides { display:grid; grid-template-columns:1fr 1.3fr; background:#f5fbff; color:#03174d; }
+  .identity-tabs { display:grid; border-right:1px solid #b7cee2; }
+  .identity-tabs button { display:flex; flex-wrap:wrap; align-items:center; gap:10px 20px; padding:24px; background:transparent; border:0; border-bottom:1px solid #b7cee2; color:#03174d; cursor:pointer; text-align:left; }
+  .identity-tabs button[aria-pressed=true] { background:#5de1f4; box-shadow:inset 5px 0 #ff6375; }
+  .identity-tabs button:hover { background:#b4eeff; }
+  .identity-tabs span { font:1.3rem 'Anton',sans-serif; }
+  .identity-tabs strong { font:700 .9rem 'Microsoft YaHei',sans-serif; }
+  .identity-side { position:relative; overflow:hidden; padding:40px; align-content:center; }
+  .identity-side>span { position:absolute; right:-8px; bottom:-60px; color:#075bb00a; font:18rem 'Anton',sans-serif; pointer-events:none; }
+  .identity-side h3 { position:relative; font-size:1.65rem; }
+  .identity-side p { position:relative; font:1rem/2 'Microsoft YaHei',sans-serif; margin-bottom:30px; }
+  .identity-next { display:block; margin-top:60px; border-top:1px solid #5de1f4; padding:30px 0; }
+  .identity-next>span { color:#8cbbd1; font-size:.85rem; }
+  .identity-next strong { display:block; margin-top:15px; font-size:clamp(1.8rem,4vw,3.5rem); }
+  .identity-next i { float:right; font-style:normal; color:#5de1f4; }
+  .identity-next:hover strong { color:#5de1f4; }
+  @media(prefers-reduced-motion:no-preference) { .identity-side { animation:turn-file 240ms ease-out; } }
+  @keyframes turn-file { from { opacity:.3; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  @media(max-width:760px) { .identity-stage { height:440px; }.identity-portrait img { width:210%; object-position:left center; }.identity-stamp { right:7%; bottom:16%; }.identity-background { font-size:5rem; top:7%; }.identity-caption { font-size:.5rem; gap:20px; }.identity-caption span:last-child { max-width:130px; }.identity-intro { grid-template-columns:1fr; padding:40px 0; gap:20px; }.identity-intro>p { margin:0; }.identity-sides { grid-template-columns:1fr; }.identity-tabs { grid-template-columns:repeat(2,minmax(0,1fr)); }.identity-tabs button { padding:16px; gap:8px; }.identity-tabs span { font-size:1.05rem; }.identity-tabs strong { font-size:.7rem; }.identity-side { padding:28px; min-height:300px; } }
+</style>
