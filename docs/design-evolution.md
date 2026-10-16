@@ -21,9 +21,9 @@
 
 - 友链：编辑 src/data/friends.ts 的 friends 数组。每条包含 name、url、description；url 使用 https。
 - 关于：编辑 src/pages/about.astro。近期状态留待作者撰写，不生成虚构经历。
-- 文章：src/content/blog，draft: true 仅本地预览；搜索和 RSS 始终排除草稿。
+- 文章：src/content/blog，draft: true 仅本地预览；搜索排除草稿。
 - 搜索：标题、摘要、标签；支持中文和 URL 参数 q / category。不声称支持正文全文检索。
-- RSS：/rss.xml，由公开文章自动生成。
+- 2026-10-16 按作者要求移除 RSS：入口、head 订阅声明、端点与依赖均删除。前文的 RSS 记录仅保留为设计迭代历史。
 
 ## 验收
 
