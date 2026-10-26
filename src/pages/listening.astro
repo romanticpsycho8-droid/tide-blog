@@ -1,0 +1,130 @@
+---
+import ArchiveLayout from '../layouts/ArchiveLayout.astro';
+import { listeningNotes } from '../data/listening';
+
+const moods = [
+	{ value: 'all', label: '全部频率' },
+	{ value: 'chill', label: '松口气' },
+	{ value: 'renewal', label: '向新生' },
+];
+---
+
+<ArchiveLayout title="潮间听" kicker="BETWEEN TIDES / LISTENING NOTES" description="让一首歌，接住此刻的心情。" compactHeading>
+	<section class="listening-shelf" aria-label="歌曲与心情随笔">
+		<div class="shelf-heading">
+			<div class="frequency"><span class="signal-dot" aria-hidden="true"></span> INNER SEA FM <span>/ VOL. 01</span></div>
+			<p><span data-note-count aria-live="polite">{String(listeningNotes.length).padStart(2, '0')} 首在听</span><span class="shelf-caption">MUSIC / MOOD / MOMENTS</span></p>
+		</div>
+		<div class="mood-filters" role="group" aria-label="按心情筛选歌曲" data-mood-filters hidden>
+			{moods.map((mood) => <button type="button" data-mood-filter={mood.value} aria-pressed={mood.value === 'all'} aria-controls="listening-cards">{mood.label}<span aria-hidden="true">↗</span></button>)}
+		</div>
+		<div class="listening-grid" id="listening-cards">
+			{listeningNotes.map((entry, i) => (
+				<article class:list={['listening-card', entry.mood]} id={entry.id} data-note-mood={entry.mood} aria-labelledby={`title-${entry.id}`}>
+					<div class="card-sleeve">
+						<img class="album-cover" src={entry.cover} alt={`${entry.artist}《${entry.album}》专辑封面`} width="640" height="640" loading="lazy" />
+						<div class="sleeve-label"><span>ON REPEAT / {String(i + 1).padStart(2, '0')}</span><span>{entry.duration}</span></div>
+						<span class="mood-label">{entry.moodLabel}</span>
+					</div>
+					<div class="card-content">
+						<div class="track-heading"><div><h2 id={`title-${entry.id}`}><a href={entry.spotifyUrl} target="_blank" rel="noopener noreferrer">{entry.track}</a></h2><p class="artist">{entry.artist}</p></div><a class="track-link" href={entry.spotifyUrl} target="_blank" rel="noopener noreferrer" aria-label={`在 Spotify 打开 ${entry.artist} 的 ${entry.track}`}>↗</a></div>
+						{entry.note ? <div class="personal-note">{entry.note.split('\n\n').filter(Boolean).map(paragraph => <p>{paragraph}</p>)}</div> : <div class="note-space" aria-label="随笔正文暂留空"><span>随笔待续</span><i aria-hidden="true"></i><i aria-hidden="true"></i></div>}
+						<details class="track-player">
+							<summary><span><span aria-hidden="true">▷</span> 展开播放器</span><small>SPOTIFY <span aria-hidden="true">＋</span></small></summary>
+							<iframe title={`Spotify 播放器：${entry.artist} — ${entry.track}`} src={`https://open.spotify.com/embed/track/${entry.spotifyId}?utm_source=generator&theme=0`} width="100%" height="80" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+							<p class="player-help">无法试听？<a href={entry.spotifyUrl} target="_blank" rel="noopener noreferrer">到 Spotify 听 ↗</a></p>
+						</details>
+						<a class="spotify-credit" href={entry.spotifyUrl} target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="currentColor"/><path d="M6 9c4-1 8-.5 12 1M7 12c3-.8 6.5-.3 10 1M8 15c2.5-.5 5-.2 8 1" fill="none" stroke="var(--deep)" stroke-width="1.6" stroke-linecap="round"/></svg> Listen on Spotify</a>
+					</div>
+				</article>
+			))}
+		</div>
+		<div class="shelf-footer"><span>END OF THIS SIDE</span><svg viewBox="0 0 280 32" aria-hidden="true"><path d="M0 16 Q17 0 35 16 T70 16 T105 16 T140 16 T175 16 T210 16 T245 16 T280 16" /></svg><span>下一首，随心情抵达。</span></div>
+	</section>
+</ArchiveLayout>
+
+<script>
+	const filters = document.querySelector<HTMLElement>('[data-mood-filters]');
+	const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-mood-filter]')];
+	const cards = [...document.querySelectorAll<HTMLElement>('[data-note-mood]')];
+	const count = document.querySelector<HTMLElement>('[data-note-count]');
+	filters?.removeAttribute('hidden');
+	buttons.forEach(button => button.addEventListener('click', () => {
+		const mood = button.dataset.moodFilter;
+		buttons.forEach(option => option.setAttribute('aria-pressed', String(option === button)));
+		cards.forEach(card => {
+			card.hidden = mood !== 'all' && card.dataset.noteMood !== mood;
+			if (card.hidden) {
+				const player = card.querySelector<HTMLDetailsElement>('details');
+				if (player?.open) player.open = false;
+			}
+		});
+		if (count) count.textContent = `${String(cards.filter(card => !card.hidden).length).padStart(2, '0')} 首在听`;
+	}));
+	// Mount on demand and unload when closed, so a hidden player cannot keep playing.
+	document.querySelectorAll<HTMLDetailsElement>('.track-player').forEach(player => {
+		const frame = player.querySelector<HTMLIFrameElement>('iframe');
+		if (!frame) return;
+		const source = frame.src;
+		frame.removeAttribute('src');
+		player.addEventListener('toggle', () => {
+			if (player.open) {
+				document.querySelectorAll<HTMLDetailsElement>('.track-player[open]').forEach(other => { if (other !== player) other.open = false; });
+				frame.src = source;
+			} else frame.removeAttribute('src');
+		});
+	});
+</script>
+
+<style>
+	.listening-shelf { border-top: 2px solid var(--cyan); }
+	.shelf-heading { display:flex; justify-content:space-between; align-items:center; gap:16px; padding:20px 0; }
+	.frequency { display:flex; align-items:center; gap:10px; font:600 .75rem 'IBM Plex Mono',monospace; letter-spacing:.08em; }
+	.frequency>span:last-child { color:#95bcd6; font-weight:400; }
+	.signal-dot { width:7px; height:7px; border-radius:50%; background:var(--coral); box-shadow:0 0 14px #ff637570; }
+	.shelf-heading p { display:flex; gap:24px; margin:0; color:#b9d6e8; font:.7rem 'IBM Plex Mono','Microsoft YaHei',sans-serif; }
+	.shelf-caption { color:#8db1ca; letter-spacing:.08em; }
+	.mood-filters { display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 26px; }
+	.mood-filters button { display:flex; align-items:center; gap:24px; min-height:40px; padding:10px 16px; border:1px solid #5de1f455; background:#03174d80; color:#d7eaf5; font:inherit; font-size:.8rem; cursor:pointer; transition:background 160ms,color 160ms; }
+	.mood-filters button[aria-pressed=true] { background:var(--cyan); color:var(--deep); border-color:var(--cyan); }
+	.mood-filters button:hover { border-color:var(--coral); }
+	.listening-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; align-items:start; }
+	.listening-card { min-width:0; overflow:hidden; border:1px solid #8bcce866; background:#031b4f; box-shadow:5px 5px 0 #020a2840; scroll-margin-top:24px; }
+	.card-sleeve { position:relative; aspect-ratio:1; overflow:hidden; background:linear-gradient(145deg,#0878c9,#03174d); }
+	.album-cover { display:block; width:100%; height:100%; object-fit:cover; }
+	.sleeve-label { position:absolute; inset:0 0 auto; display:flex; justify-content:space-between; padding:12px 14px; background:linear-gradient(#020a28e0,#020a2800); color:#fff; font:.6rem 'IBM Plex Mono',monospace; letter-spacing:.08em; text-shadow:0 1px 3px #020a28; }
+	.mood-label { position:absolute; bottom:16px; left:0; background:var(--coral); color:var(--deep); padding:8px 18px 8px 14px; font:700 .8rem 'Microsoft YaHei',sans-serif; clip-path:polygon(0 0,100% 0,calc(100% - 8px) 100%,0 100%); }
+	.chill .mood-label { background:var(--cyan); }
+	.card-content { padding:20px 18px 14px; }
+	.track-heading { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+	.track-heading>div { min-width:0; }
+	h2 { margin:0; font:600 clamp(1.5rem,2.5vw,2rem)/1.1 'Barlow Condensed',sans-serif; overflow-wrap:anywhere; }
+	h2 a:hover { color:var(--cyan); }
+	.artist { margin:8px 0 0; color:#b8d3e9; font:.7rem 'IBM Plex Mono',monospace; overflow-wrap:anywhere; }
+	.track-link { display:grid; place-items:center; flex-shrink:0; width:36px; height:36px; border:1px solid #5de1f455; color:var(--cyan); font-size:1.3rem; }
+	.track-link:hover { color:var(--deep); background:var(--cyan); }
+	.note-space { display:grid; gap:19px; padding:27px 0 24px; }
+	.note-space span { color:#98b7ce; font-size:.7rem; letter-spacing:.15em; }
+	.note-space i { height:1px; background:#92c9e522; }
+	.personal-note { padding:15px 0; }
+	.personal-note p { margin:10px 0; color:#d6e7f1; font:.9rem/1.95 'Microsoft YaHei',sans-serif; white-space:pre-line; overflow-wrap:anywhere; }
+	.track-player { border-top:1px solid #92c9e544; }
+	summary { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:14px 0; color:#dcecf7; font-size:.75rem; cursor:pointer; list-style:none; }
+	summary::-webkit-details-marker { display:none; }
+	summary>span>span { color:var(--cyan); margin-right:6px; }
+	summary small { display:flex; gap:8px; align-items:center; color:#a5c7db; font:.55rem 'IBM Plex Mono',monospace; letter-spacing:.04em; }
+	summary:hover { color:var(--cyan); }
+	.track-player[open] summary small>span { transform:rotate(45deg); }
+	iframe { display:block; border:0; border-radius:12px; background:#121212; }
+	.player-help { margin:12px 0; color:#b8d3e9; font-size:.7rem; line-height:1.8; }
+	.player-help a { color:var(--cyan); text-decoration:underline; text-underline-offset:3px; }
+	.spotify-credit { display:flex; width:fit-content; align-items:center; gap:7px; padding:4px 0; color:#b8d3e9; font:500 .7rem 'Barlow Condensed',sans-serif; }
+	.spotify-credit:hover { color:var(--cyan); }
+	.shelf-footer { display:flex; gap:24px; align-items:center; margin-top:52px; padding-top:20px; border-top:1px solid #5de1f433; color:#9fc1d8; font:.65rem 'IBM Plex Mono','Microsoft YaHei',sans-serif; letter-spacing:.05em; }
+	.shelf-footer svg { width:140px; height:24px; fill:none; stroke:var(--cyan); opacity:.5; }
+	.shelf-footer>span:last-child { margin-left:auto; }
+	@media(min-width:1001px) { .listening-grid::after { content:'B-SIDE / INNER SEA'; align-self:center; justify-self:center; writing-mode:vertical-rl; font:.65rem 'IBM Plex Mono',monospace; letter-spacing:.4em; color:#8bcce855; border-left:1px solid #5de1f422; padding-left:30px; height:180px; } }
+	@media(max-width:1000px) { .listening-grid { grid-template-columns:repeat(2,minmax(0,1fr)); max-width:790px; }.shelf-caption { display:none; } }
+	@media(max-width:600px) { .listening-grid { grid-template-columns:minmax(0,1fr); max-width:390px; margin-inline:auto; gap:28px; }.shelf-heading { flex-wrap:wrap; gap:10px; }.frequency { font-size:.65rem; }.shelf-heading p { font-size:.65rem; }.mood-filters { gap:6px; }.mood-filters button { gap:12px; padding:10px 12px; }.shelf-footer { flex-wrap:wrap; gap:12px; }.shelf-footer svg { flex:1; min-width:60px; }.shelf-footer>span:last-child { width:100%; margin:0; }.card-content { padding:20px 16px 14px; } }
+	@media(prefers-reduced-motion:reduce) { .mood-filters button { transition:none; } }
+</style>
