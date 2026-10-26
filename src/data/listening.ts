@@ -25,7 +25,7 @@ export const listeningNotes: ListeningNote[] = [
 		spotifyId: '13pJIAyPBaFQg7cQ518iOA',
 		spotifyUrl: 'https://open.spotify.com/track/13pJIAyPBaFQg7cQ518iOA?utm_source=openai&utm_medium=chatgpt&go=1&nap_web=1&request_id=89e273bb-3223-4242-bc9d-2f5a26208e68',
 		cover: 'https://i.scdn.co/image/ab67616d0000b2738c0365c9b2f4bd7873e20de1',
-		note: '',
+		note: 'last time was the last time .近期最喜欢的一首歌了www\n对过去的眼泪一并擦干，每次听到都会不由自主向前奔跑起来，仿佛一切都有希望。',
 	},
 	{
 		id: 'curiosity',

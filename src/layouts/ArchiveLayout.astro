@@ -71,11 +71,11 @@ const documentTitle = `${title} — tide`;
 
 			<div class="utility-strip"><UtilityNav /><SignalTerminal /></div>
 			<main class="archive-main" id="main-content" tabindex="-1">
-				<header class:list={['page-heading', { compact: compactHeading }]}>
+				<slot name="heading"><header class:list={['page-heading', { compact: compactHeading }]}>
 					<p><span>{index}</span>{kicker}</p>
 					<h1>{title}</h1>
 					{description && <div class="heading-line"><i></i><p>{description}</p></div>}
-				</header>
+				</header></slot>
 				<slot />
 			</main>
 
