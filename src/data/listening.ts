@@ -16,6 +16,20 @@ export interface ListeningNote {
 
 export const listeningNotes: ListeningNote[] = [
 	{
+		id: 'prologue',
+		track: 'Prologue',
+		artist: 'aespa',
+		album: 'Armageddon - The 1st Album',
+		duration: '3:14',
+		mood: 'renewal',
+		moodLabel: '向新生',
+		spotifyId: '6Xo5Q8syGXSd0V39rh1iea',
+		spotifyUrl: 'https://open.spotify.com/track/6Xo5Q8syGXSd0V39rh1iea?utm_source=openai&utm_medium=chatgpt&go=1&nap_web=1&request_id=2eaf87b7-4fb9-4e20-aa79-2fa0d3d1df5d',
+		cover: 'https://i.scdn.co/image/ab67616d0000b273b0201a6a4e736f74081331b8',
+		quote: "Maybe I'm a weirdo, I know.",
+		note: '参加清华暑校的时候，晚上戴上耳机，搜索这首歌来听。\n\n即使经历了无数挫折，即使人际关系一团糟，你依旧能坚守住自己。',
+	},
+	{
 		id: 'indestructible',
 		track: 'Indestructible',
 		artist: 'MEOVV',
